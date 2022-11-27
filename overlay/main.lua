@@ -1,5 +1,4 @@
 
-lovr.mouse = require 'mouse'
 local math = require 'math'
 
 local model_left = nil
@@ -13,6 +12,11 @@ local stateDragging = false
 local stateCameHeading = -quarterPI
 local stateCamPitch = -quarterPI
 local stateDistance = 4
+local use_mouse = false
+
+if use_mouse then
+	lovr.mouse = require 'mouse'
+end
 
 
 --
@@ -119,9 +123,11 @@ function lovr.load()
 	-- Init camera & view matrix, for third party camera.
 	setThirdPartyView()
 
-	-- Set mouse event callbacks.
-	lovr.handlers['mousemoved'] = mouse_move
-	lovr.handlers['wheelmoved'] = wheel_move
+	if use_mouse then
+		-- Set mouse event callbacks.
+		lovr.handlers['mousemoved'] = mouse_move
+		lovr.handlers['wheelmoved'] = wheel_move
+	end
 end
 
 ----
@@ -132,6 +138,10 @@ function lovr.update()
 		if lovr.headset.isDown(hand, 'trigger') then
 			down = true
 		end
+	end
+
+	if not use_mouse then
+		return
 	end
 
 	if (lovr.mouse.isDown(1)) then
