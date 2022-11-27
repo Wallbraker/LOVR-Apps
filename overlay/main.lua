@@ -129,8 +129,8 @@ function lovr.load()
 
 	if use_mouse then
 		-- Set mouse event callbacks.
-		lovr.handlers['mousemoved'] = mouse_move
-		lovr.handlers['wheelmoved'] = wheel_move
+		lovr.handlers['mousemoved'] = mouseMove
+		lovr.handlers['wheelmoved'] = mouseScroll
 	end
 end
 
