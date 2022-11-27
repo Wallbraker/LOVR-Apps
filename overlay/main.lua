@@ -39,47 +39,47 @@ end
 
 ----
 -- Helper function to draw a model at a device location.
-function drawModelAtDevice(model, device)
+function drawModelAtDevice(pass, model, device)
 	if not lovr.headset.isTracked(device) then return end
 	local x, y, z = lovr.headset.getPosition(device)
 	local a, ax, ay, az = lovr.headset.getOrientation(device)
 
-	model:draw(x, y, z, 1, a, ax, ay, az)
+	pass:draw(model, x, y, z, 1, a, ax, ay, az)
 end
 
 ----
 -- Renders the scene, can handle differences between view and mirror.
-function renderScene(isMirror)
+function renderScene(pass, isMirror)
 	local t = lovr.timer.getTime()
 
-	lovr.graphics.setColor(.15, .15, .15)
-	lovr.graphics.plane('fill', 0, 0, 0, 4, 4, math.pi / 2, 1, 0, 0)
+	pass:setColor(.15, .15, .15)
+	pass:plane(0, 0, 0, 4, 4, math.pi / 2, 1, 0, 0)
 
 	-- If it's the mirror view, draw the head
 	if isMirror then
-		lovr.graphics.setColor(1, 1, 1)
+		pass:setColor(1, 1, 1)
 		local x, y, z, angle, ax, ay, az = lovr.headset.getPose()
-		lovr.graphics.cube('fill', x, y, z, .2, angle, ax, ay, az)
+		pass:cube(x, y, z, .2, angle, ax, ay, az)
 	else
-		lovr.graphics.setColor(1, 1, 1)
+		pass:setColor(1, 1, 1)
 		local x, y, z, angle, ax, ay, az = lovr.headset.getPose()
-		lovr.graphics.cube('fill', camera)
+		pass:cube(camera)
 	end
 
 	-- White hand cubes
-	lovr.graphics.setColor(1, 1, 1)
+	pass:setColor(1, 1, 1)
 	local has_hands = false
 	for _, hand in ipairs({ 'left', 'right' }) do
 		for _, joint in ipairs(lovr.headset.getSkeleton(hand) or {}) do
 			has_hands = true
 			local x, y, z, a, ax, ay, az = unpack(joint, 1, 7)
-			lovr.graphics.cube('fill', x, y, z, 0.01, a, ax, ay, az)
+			pass:cube(x, y, z, 0.01, a, ax, ay, az)
 		end
 	end
 
 	if true then
-		drawModelAtDevice(model_left, 'hand/left')
-		drawModelAtDevice(model_right, 'hand/right')
+		drawModelAtDevice(pass, model_left, 'hand/left')
+		drawModelAtDevice(pass, model_right, 'hand/right')
 	end
 end
 
@@ -117,6 +117,10 @@ end
 ----
 -- Called on loading.
 function lovr.load()
+	-- For headset views
+	lovr.graphics.setBackgroundColor(0.0, 0.0, 0.0, 0.0)
+
+	-- Models
 	model_left = lovr.graphics.newModel('valve-index_left.glb')
 	model_right = lovr.graphics.newModel('valve-index_right.glb')
 
@@ -155,19 +159,20 @@ end
 
 ----
 -- Callback to draw the main scene, called once for each view.
-function lovr.draw()
-	lovr.graphics.setBackgroundColor(0.0, 0.0, 0.0, 0.0)
-	renderScene(false)
+function lovr.draw(pass)
+	-- @todo setBackgroundColor(0.5, 0.5, 0.9, 1.0)
+	-- @todo pass:clear()
+	renderScene(pass, false)
 end
 
 ----
 -- Callback to draw the mirror window.
-function lovr.mirror()
-	lovr.graphics.setBackgroundColor(0.5, 0.5, 0.9, 1.0)
-	lovr.graphics.clear()
-	lovr.graphics.origin()
-	lovr.graphics.transform(view)
-	renderScene(true)
+function lovr.mirror(pass)
+	-- @todo setBackgroundColor(0.5, 0.5, 0.9, 1.0)
+	-- @todo pass:clear()
+	pass:origin()
+	pass:transform(view)
+	renderScene(pass, true)
 
-	lovr.graphics.setBackgroundColor(0.0, 0.0, 0.0, 0.0)
+	-- @todo setBackgroundColor(0.0, 0.0, 0.0, 0.0)
 end
