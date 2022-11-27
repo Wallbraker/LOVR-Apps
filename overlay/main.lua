@@ -50,6 +50,15 @@ function drawModelAtDevice(pass, model, device)
 end
 
 ----
+-- Helper clear the screen.
+function clear(pass, r, g, b, a)
+	pass:setColor(r, g, b, a)
+	pass:setDepthWrite(false)
+	pass:fill()
+	pass:setDepthWrite(true)
+end
+
+----
 -- Renders the scene, can handle differences between view and mirror.
 function renderScene(pass, isMirror)
 	local t = lovr.timer.getTime()
@@ -162,19 +171,14 @@ end
 ----
 -- Callback to draw the main scene, called once for each view.
 function lovr.draw(pass)
-	-- @todo setBackgroundColor(0.5, 0.5, 0.9, 1.0)
-	-- @todo pass:clear()
 	renderScene(pass, false)
 end
 
 ----
 -- Callback to draw the mirror window.
 function lovr.mirror(pass)
-	-- @todo setBackgroundColor(0.5, 0.5, 0.9, 1.0)
-	-- @todo pass:clear()
+	clear(pass, 0.5, 0.5, 0.9, 1.0)
 	pass:origin()
 	pass:transform(view)
 	renderScene(pass, true)
-
-	-- @todo setBackgroundColor(0.0, 0.0, 0.0, 0.0)
 end
