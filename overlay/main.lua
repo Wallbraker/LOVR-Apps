@@ -12,7 +12,9 @@ local stateDragging = false
 local stateCameHeading = -quarterPI
 local stateCamPitch = -quarterPI
 local stateDistance = 4
-local use_mouse = false
+
+-- @todo Detect if a window is present
+local use_mouse = true
 
 if use_mouse then
 	lovr.mouse = require 'mouse'
