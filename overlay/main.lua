@@ -79,17 +79,20 @@ function renderScene(pass, isMirror)
 
 	-- White hand cubes
 	pass:setColor(1, 1, 1)
-	local has_hands = false
-	for _, hand in ipairs({ 'left', 'right' }) do
+	local has_hands = {false, false}
+	for i, hand in ipairs({ 'left', 'right' }) do
+		local has_hand = false
 		for _, joint in ipairs(lovr.headset.getSkeleton(hand) or {}) do
-			has_hands = true
+			has_hands[i] = true
 			local x, y, z, a, ax, ay, az = unpack(joint, 1, 7)
 			pass:cube(x, y, z, 0.01, a, ax, ay, az)
 		end
 	end
 
-	if true then
+	if not has_hands[1] then
 		drawModelAtDevice(pass, model_left, 'hand/left')
+	end
+	if not has_hands[2] then
 		drawModelAtDevice(pass, model_right, 'hand/right')
 	end
 end
