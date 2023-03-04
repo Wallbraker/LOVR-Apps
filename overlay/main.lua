@@ -3,6 +3,7 @@ local math = require 'math'
 
 local model_left = nil
 local model_right = nil
+local model_box = nil
 local view = nil
 local camera = nill
 
@@ -85,7 +86,7 @@ function renderScene(pass, isMirror)
 		for _, joint in ipairs(lovr.headset.getSkeleton(hand) or {}) do
 			has_hands[i] = true
 			local x, y, z, radius, a, ax, ay, az = unpack(joint, 1, 8)
-			pass:cube(x, y, z, radius, a, ax, ay, az)
+			pass:draw(model_box, x, y, z, radius, a, ax, ay, az)
 		end
 	end
 
@@ -137,6 +138,7 @@ function lovr.load()
 	-- Models
 	model_left = lovr.graphics.newModel('valve-index_left.glb')
 	model_right = lovr.graphics.newModel('valve-index_right.glb')
+	model_box = lovr.graphics.newModel('box-textured.glb')
 
 	-- Init camera & view matrix, for third party camera.
 	setThirdPartyView()
