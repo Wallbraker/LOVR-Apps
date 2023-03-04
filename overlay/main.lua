@@ -84,8 +84,8 @@ function renderScene(pass, isMirror)
 		local has_hand = false
 		for _, joint in ipairs(lovr.headset.getSkeleton(hand) or {}) do
 			has_hands[i] = true
-			local x, y, z, a, ax, ay, az = unpack(joint, 1, 7)
-			pass:cube(x, y, z, 0.01, a, ax, ay, az)
+			local x, y, z, radius, a, ax, ay, az = unpack(joint, 1, 8)
+			pass:cube(x, y, z, radius, a, ax, ay, az)
 		end
 	end
 
