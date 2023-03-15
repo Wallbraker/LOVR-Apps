@@ -8,7 +8,7 @@ local model_left = nil
 local model_right = nil
 local model_box = nil
 local view = nil
-local camera = nill
+local camera = nil
 
 local quarterPI = (math.pi / 4) - 0.0001
 local halfPI = (math.pi / 2) - 0.0001
