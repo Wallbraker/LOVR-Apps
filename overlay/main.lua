@@ -7,6 +7,7 @@ local math = require 'math'
 local model_left = nil
 local model_right = nil
 local model_box = nil
+local tone = nil
 local view = nil
 local camera = nil
 
@@ -183,6 +184,9 @@ end
 function lovr.load()
 	-- For headset views
 	lovr.graphics.setBackgroundColor(0.0, 0.0, 0.0, 0.0)
+
+	-- Tone
+	tone = createTone()
 
 	-- Models
 	model_left = lovr.graphics.newModel('valve-index_left.glb')
