@@ -1,3 +1,6 @@
+-- Copyright 2018-2022, Bjorn Swenson
+-- SPDX-License-Identifier: MIT-1.0
+
 -- Source: https://github.com/bjornbytes/lovr-mouse/
 -- Source: 4f5006418271611c003c4958abe4dc695facee36
 
