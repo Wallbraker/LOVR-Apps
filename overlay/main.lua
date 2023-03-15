@@ -32,6 +32,38 @@ end
 --
 
 ----
+-- Create a tone, starts with full amplitude then quitens down.
+function createTone()
+	local length = 1
+	local rate = 48000
+	local frames = length * rate
+	local frequency = 440
+	local volume = 0.5
+
+	local sound = lovr.data.newSound(frames, 'f32', 'stereo', rate)
+
+	local data = {}
+	for i = 1, frames do
+		-- Start high but then quiet down.
+		local v = volume * ((frames - i) / frames)
+
+		local amplitude = math.sin((i - 1) * frequency / rate * (2 * math.pi)) * v
+		data[2 * i - 1] = amplitude
+		data[2 * i - 0] = amplitude
+	end
+
+	sound:setFrames(data)
+
+	source = lovr.audio.newSource(sound)
+
+	if false then
+		source:setLooping(true)
+	end
+
+	return source
+end
+
+----
 -- Sets the third-party view, the camera matrix is scaled for drawing.
 function setThirdPartyView()
 	local x = lovr.math.newQuat(stateCamPitch, 1, 0, 0)
@@ -161,6 +193,10 @@ function lovr.update()
 		if lovr.headset.isDown(hand, 'trigger') then
 			down = true
 		end
+	end
+
+	if down then
+		tone:play()
 	end
 
 	if not use_mouse then
