@@ -1,6 +1,7 @@
 -- Copyright 2021-2023, Collabora, Ltd.
 -- SPDX-License-Identifier: BSL-1.0 or MIT-1.0
 
+
 local math = require 'math'
 
 local model_left = nil
@@ -16,9 +17,9 @@ local stateCameHeading = -quarterPI
 local stateCamPitch = -quarterPI
 local stateDistance = 4
 
--- @todo Detect if a window is present
-local use_mouse = true
-
+----
+-- Setup mouse if we have a window.
+local use_mouse = g_window_created
 if use_mouse then
 	lovr.mouse = require 'mouse'
 end
