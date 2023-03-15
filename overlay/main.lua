@@ -86,6 +86,18 @@ function drawModelAtDevice(pass, model, device)
 end
 
 ----
+-- Helper to draw a line along Z-axis of a device pose.
+function drawLineZ(pass, device, length)
+	if not lovr.headset.isTracked(device) then return end
+	local x, y, z = lovr.headset.getPosition(device)
+	local a, ax, ay, az = lovr.headset.getOrientation(device)
+	local rot = lovr.math.newQuat(a, ax, ay, az)
+	local rx, ry, rz = rot:direction():mul(length):unpack()
+
+	pass:line(x, y, z, rx + x, ry + y, rz + z)
+end
+
+----
 -- Helper clear the screen.
 function clear(pass, r, g, b, a)
 	pass:setColor(r, g, b, a)
@@ -127,9 +139,11 @@ function renderScene(pass, isMirror)
 
 	if not has_hands[1] then
 		drawModelAtDevice(pass, model_left, 'hand/left')
+		drawLineZ(pass, 'hand/left/point', 1.0)
 	end
 	if not has_hands[2] then
 		drawModelAtDevice(pass, model_right, 'hand/right')
+		drawLineZ(pass, 'hand/right/point', 1.0)
 	end
 end
 
