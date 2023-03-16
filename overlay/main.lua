@@ -130,7 +130,6 @@ function renderScene(pass, isMirror)
 	pass:setColor(1, 1, 1)
 	local has_hands = {false, false}
 	for i, hand in ipairs({ 'left', 'right' }) do
-		local has_hand = false
 		for _, joint in ipairs(lovr.headset.getSkeleton(hand) or {}) do
 			has_hands[i] = true
 			local x, y, z, radius, a, ax, ay, az = unpack(joint, 1, 8)
@@ -138,11 +137,13 @@ function renderScene(pass, isMirror)
 		end
 	end
 
-	if not has_hands[1] then
+	local always_draw_controllers = true
+
+	if not has_hands[1] or always_draw_controllers then
 		drawModelAtDevice(pass, model_left, 'hand/left')
 		drawLineZ(pass, 'hand/left/point', 1.0)
 	end
-	if not has_hands[2] then
+	if not has_hands[2] or always_draw_controllers then
 		drawModelAtDevice(pass, model_right, 'hand/right')
 		drawLineZ(pass, 'hand/right/point', 1.0)
 	end
