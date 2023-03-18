@@ -3,22 +3,15 @@
 
 
 local math = require 'math'
+local third = require 'thirdMouse'
+
+require 'helpers'
 
 local model_left = nil
 local model_right = nil
 local model_box = nil
 local tone = nil
-local view = nil
-local camera = nil
 
-local quarterPI = (math.pi / 4) - 0.0001
-local halfPI = (math.pi / 2) - 0.0001
-local stateDragging = false
-local stateCameHeading = -quarterPI
-local stateCamPitch = -quarterPI
-local stateDistance = 4
-
-require 'helpers'
 
 ----
 -- Setup mouse if we have a window.
@@ -35,18 +28,6 @@ end
 --
 
 ----
--- Sets the third-party view, the camera matrix is scaled for drawing.
-function setThirdPartyView()
-	local x = lovr.math.newQuat(stateCamPitch, 1, 0, 0)
-	local y = lovr.math.newQuat(stateCameHeading, 0, 1, 0)
-	local rot = y:mul(x)
-
-	local x, y, z = rot:direction():mul(-stateDistance):unpack()
-	view = lovr.math.newMat4():lookAt(vec3(x, y, z), vec3(0, 0, 0), vec3(0, 1, 0))
-	camera = lovr.math.newMat4(view):invert():scale(0.2)
-end
-
-----
 -- Renders the scene, can handle differences between view and mirror.
 function renderScene(pass, isMirror)
 	local t = lovr.timer.getTime()
@@ -61,8 +42,7 @@ function renderScene(pass, isMirror)
 		pass:cube(x, y, z, .2, angle, ax, ay, az)
 	else
 		pass:setColor(1, 1, 1)
-		local x, y, z, angle, ax, ay, az = lovr.headset.getPose()
-		pass:cube(camera)
+		pass:cube(third.getCameraObjectMat():scale(0.2))
 	end
 
 	-- White hand cubes
@@ -98,25 +78,13 @@ end
 ----
 -- Mouse move event callback.
 function mouseMove(x, y, rel_x, rel_y)
-	if not stateDragging then return end
-
-	stateCameHeading = stateCameHeading + rel_x * -0.003
-	stateCamPitch = stateCamPitch + rel_y * -0.003
-
-	if stateCamPitch < -halfPI then stateCamPitch = -halfPI end
-	if stateCamPitch >  halfPI then stateCamPitch =  halfPI end
-
-	setThirdPartyView()
+	third.mouseMove(x, y, rel_x, rel_y)
 end
 
 ----
 -- Mouse scroll event callback.
 function mouseScroll(rel_x, rel_y)
-	stateDistance = stateDistance - rel_y * 0.1
-
-	if stateDistance < 1.0 then stateDistance = 1.0 end
-
-	setThirdPartyView()
+	third.mouseScroll(rel_x, rel_y)
 end
 
 ----
@@ -133,9 +101,6 @@ function lovr.load()
 	model_right = lovr.graphics.newModel('valve-index_right.glb')
 	model_box = lovr.graphics.newModel('box-textured.glb')
 
-	-- Init camera & view matrix, for third party camera.
-	setThirdPartyView()
-
 	if use_mouse then
 		-- Set mouse event callbacks.
 		lovr.handlers['mousemoved'] = mouseMove
@@ -145,7 +110,10 @@ end
 
 ----
 -- Called every frame to advance the state.
-function lovr.update()
+function lovr.update(dt)
+
+	third.update(dt)
+
 	local down = false
 	for i, hand in ipairs(lovr.headset.getHands()) do
 		if lovr.headset.isDown(hand, 'trigger') then
@@ -162,10 +130,10 @@ function lovr.update()
 	end
 
 	if (lovr.mouse.isDown(1)) then
-		stateDragging = true
+		third.setDragging(true)
 		lovr.mouse.setRelativeMode(true)
 	else
-		stateDragging = false
+		third.setDragging(false)
 		lovr.mouse.setRelativeMode(false)
 	end
 end
@@ -181,6 +149,6 @@ end
 function lovr.mirror(pass)
 	drawClear(pass, 0.5, 0.5, 0.9, 1.0)
 	pass:origin()
-	pass:transform(view)
+	pass:transform(third.getCameraViewMat())
 	renderScene(pass, true)
 end
