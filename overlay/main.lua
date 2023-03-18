@@ -97,9 +97,9 @@ function lovr.load()
 	tone = createTone()
 
 	-- Models
-	model_left = lovr.graphics.newModel('valve-index_left.glb')
-	model_right = lovr.graphics.newModel('valve-index_right.glb')
-	model_box = lovr.graphics.newModel('box-textured.glb')
+	model_left = lovr.graphics.newModel('models/valve-index_left.glb')
+	model_right = lovr.graphics.newModel('models/valve-index_right.glb')
+	model_box = lovr.graphics.newModel('models/box-textured.glb')
 
 	if use_mouse then
 		-- Set mouse event callbacks.
