@@ -60,6 +60,43 @@ function drawLineZ(pass, device, length)
 end
 
 ----
+-- Helper to draw a axis cross at a device pose.
+function drawAxis(pass, device, length)
+	if not lovr.headset.isTracked(device) then return end
+
+	local vec3 = lovr.math.vec3
+
+	local x, y, z = lovr.headset.getPosition(device)
+	local a, ax, ay, az = lovr.headset.getOrientation(device)
+	local rot = lovr.math.newQuat(a, ax, ay, az)
+
+	local center = vec3(x, y, z)
+	local forward = rot:direction():mul(length)
+	local up = rot:mul(vec3(0, 1, 0)):mul(length)
+	local right = rot:mul(vec3(1, 0, 0)):mul(length)
+
+	local n1 = 0.0
+	local n2 = 0.5
+	local p1 = 0.2
+	local p2 = 1.0
+
+	pass:setColor(p2, p1, p1)
+	pass:line(center, center + right)
+	pass:setColor(n2, n1, n1)
+	pass:line(center, center - right)
+
+	pass:setColor(p1, p2, p1)
+	pass:line(center, center + up)
+	pass:setColor(n1, n2, n1)
+	pass:line(center, center - up)
+
+	pass:setColor(p1, p1, p2)
+	pass:line(center, center + forward)
+	pass:setColor(n1, n1, n2)
+	pass:line(center, center - forward)
+end
+
+----
 -- Helper clear the screen.
 function drawClear(pass, r, g, b, a)
 	pass:setColor(r, g, b, a)

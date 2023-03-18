@@ -56,15 +56,35 @@ function renderScene(pass, isMirror)
 		end
 	end
 
+	local draw_controllers = false
 	local always_draw_controllers = true
+	local draw_axis = true
 
-	if not has_hands[1] or always_draw_controllers then
-		drawModelAtDevice(pass, model_left, 'hand/left')
+	if draw_axis then
+		drawAxis(pass, 'hand/left', 0.1)
+		drawAxis(pass, 'hand/left/point', 0.1)
+
+		drawAxis(pass, 'hand/right', 0.1)
+		drawAxis(pass, 'hand/right/point', 0.1)
+	else
+		pass:setColor(1, 1, 1)
 		drawLineZ(pass, 'hand/left/point', 1.0)
-	end
-	if not has_hands[2] or always_draw_controllers then
-		drawModelAtDevice(pass, model_right, 'hand/right')
 		drawLineZ(pass, 'hand/right/point', 1.0)
+	end
+
+	if draw_controllers and always_draw_controllers then
+		pass:setColor(1, 1, 1)
+		drawModelAtDevice(pass, model_left, 'hand/left')
+		drawModelAtDevice(pass, model_right, 'hand/right')
+	end
+
+	if not has_hands[1] and not always_draw_controllers and draw_controllers then
+		pass:setColor(1, 1, 1)
+		drawModelAtDevice(pass, model_left, 'hand/left')
+	end
+	if not has_hands[2] and not always_draw_controllers and draw_controllers then
+		pass:setColor(1, 1, 1)
+		drawModelAtDevice(pass, model_right, 'hand/right')
 	end
 end
 
