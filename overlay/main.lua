@@ -18,6 +18,8 @@ local stateCameHeading = -quarterPI
 local stateCamPitch = -quarterPI
 local stateDistance = 4
 
+require 'helpers'
+
 ----
 -- Setup mouse if we have a window.
 local use_mouse = g_window_created
@@ -33,38 +35,6 @@ end
 --
 
 ----
--- Create a tone, starts with full amplitude then quitens down.
-function createTone()
-	local length = 1
-	local rate = 48000
-	local frames = length * rate
-	local frequency = 440
-	local volume = 0.5
-
-	local sound = lovr.data.newSound(frames, 'f32', 'stereo', rate)
-
-	local data = {}
-	for i = 1, frames do
-		-- Start high but then quiet down.
-		local v = volume * ((frames - i) / frames)
-
-		local amplitude = math.sin((i - 1) * frequency / rate * (2 * math.pi)) * v
-		data[2 * i - 1] = amplitude
-		data[2 * i - 0] = amplitude
-	end
-
-	sound:setFrames(data)
-
-	source = lovr.audio.newSource(sound)
-
-	if false then
-		source:setLooping(true)
-	end
-
-	return source
-end
-
-----
 -- Sets the third-party view, the camera matrix is scaled for drawing.
 function setThirdPartyView()
 	local x = lovr.math.newQuat(stateCamPitch, 1, 0, 0)
@@ -74,37 +44,6 @@ function setThirdPartyView()
 	local x, y, z = rot:direction():mul(-stateDistance):unpack()
 	view = lovr.math.newMat4():lookAt(vec3(x, y, z), vec3(0, 0, 0), vec3(0, 1, 0))
 	camera = lovr.math.newMat4(view):invert():scale(0.2)
-end
-
-----
--- Helper function to draw a model at a device location.
-function drawModelAtDevice(pass, model, device)
-	if not lovr.headset.isTracked(device) then return end
-	local x, y, z = lovr.headset.getPosition(device)
-	local a, ax, ay, az = lovr.headset.getOrientation(device)
-
-	pass:draw(model, x, y, z, 1, a, ax, ay, az)
-end
-
-----
--- Helper to draw a line along Z-axis of a device pose.
-function drawLineZ(pass, device, length)
-	if not lovr.headset.isTracked(device) then return end
-	local x, y, z = lovr.headset.getPosition(device)
-	local a, ax, ay, az = lovr.headset.getOrientation(device)
-	local rot = lovr.math.newQuat(a, ax, ay, az)
-	local rx, ry, rz = rot:direction():mul(length):unpack()
-
-	pass:line(x, y, z, rx + x, ry + y, rz + z)
-end
-
-----
--- Helper clear the screen.
-function clear(pass, r, g, b, a)
-	pass:setColor(r, g, b, a)
-	pass:setDepthWrite(false)
-	pass:fill()
-	pass:setDepthWrite(true)
 end
 
 ----
@@ -240,7 +179,7 @@ end
 ----
 -- Callback to draw the mirror window.
 function lovr.mirror(pass)
-	clear(pass, 0.5, 0.5, 0.9, 1.0)
+	drawClear(pass, 0.5, 0.5, 0.9, 1.0)
 	pass:origin()
 	pass:transform(view)
 	renderScene(pass, true)
