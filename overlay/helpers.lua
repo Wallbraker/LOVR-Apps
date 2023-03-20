@@ -74,38 +74,37 @@ function drawAxis(pass, device, stop, start)
 
 	start = start or 0.0
 
-	local right = rot:mul(vec3(1, 0, 0))
-	local right_start = right * start
-	local right_stop = right * stop
+	local x = rot:mul(vec3(1, 0, 0))
+	local x_start = x * start
+	local x_stop = x * stop
 
-	local up = rot:mul(vec3(0, 1, 0))
-	local up_start = up * start
-	local up_stop = up * stop
+	local y = rot:mul(vec3(0, 1, 0))
+	local y_start = y * start
+	local y_stop = y * stop
 
-	local back = rot:mul(vec3(0, 0, 1))
-	local back_start = back * start
-	local back_stop = back * stop
+	local z = rot:mul(vec3(0, 0, 1))
+	local z_start = z * start
+	local z_stop = z * stop
 
-	local n1 = 0.0
-	local n2 = 0.5
-	local p1 = 0.2
-	local p2 = 1.0
-	local f = up * 0.1
+	local n1 = 0.0 -- Negative non-current axis
+	local n2 = 0.5 -- Negative current axis
+	local p1 = 0.2 -- Positive non-current axis
+	local p2 = 1.0 -- Positive current axis
 
 	pass:setColor(p2, p1, p1)
-	pass:line(center + right_start, center + right_stop)
+	pass:line(center + x_start, center + x_stop)
 	pass:setColor(n2, n1, n1)
-	pass:line(center - right_start, center - right_stop)
+	pass:line(center - x_start, center - x_stop)
 
 	pass:setColor(p1, p2, p1)
-	pass:line(center + up_start, center + up_stop)
+	pass:line(center + y_start, center + y_stop)
 	pass:setColor(n1, n2, n1)
-	pass:line(center - up_start, center - up_stop)
+	pass:line(center - y_start, center - y_stop)
 
 	pass:setColor(p1, p1, p2)
-	pass:line(center + back_start, center + back_stop)
+	pass:line(center + z_start, center + z_stop)
 	pass:setColor(n1, n1, n2)
-	pass:line(center - back_start, center - back_stop)
+	pass:line(center - z_start, center - z_stop)
 end
 
 ----
