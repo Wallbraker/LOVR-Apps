@@ -78,13 +78,13 @@ function drawAxis(pass, device, stop, start)
 	local right_start = right * start
 	local right_stop = right * stop
 
-	local forward = rot:direction()
-	local forward_start = forward * start
-	local forward_stop = forward * stop
-
 	local up = rot:mul(vec3(0, 1, 0))
 	local up_start = up * start
 	local up_stop = up * stop
+
+	local back = rot:mul(vec3(0, 0, 1))
+	local back_start = back * start
+	local back_stop = back * stop
 
 	local n1 = 0.0
 	local n2 = 0.5
@@ -103,9 +103,9 @@ function drawAxis(pass, device, stop, start)
 	pass:line(center - up_start, center - up_stop)
 
 	pass:setColor(p1, p1, p2)
-	pass:line(center + forward_start, center + forward_stop)
+	pass:line(center + back_start, center + back_stop)
 	pass:setColor(n1, n1, n2)
-	pass:line(center - forward_start, center - forward_stop)
+	pass:line(center - back_start, center - back_stop)
 end
 
 ----
