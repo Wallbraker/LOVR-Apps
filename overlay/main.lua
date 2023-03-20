@@ -74,14 +74,16 @@ function renderScene(pass, isMirror)
 
 	if lDrawAxis then
 		drawAxisAtDevice(pass, 'hand/left', 0.1, 0.01)
-		drawTextAtDeviceLookingAtUser(pass, 'hand/left', 'grip', 0.01)
 		drawAxisAtDevice(pass, 'hand/left/point', 0.1, 0.01)
-		drawTextAtDeviceLookingAtUser(pass, 'hand/left/point', 'aim', 0.01)
-
 		drawAxisAtDevice(pass, 'hand/right', 0.1, 0.01)
-		drawTextAtDeviceLookingAtUser(pass, 'hand/right', 'grip', 0.01)
 		drawAxisAtDevice(pass, 'hand/right/point', 0.1, 0.01)
+
+		pass:setDepthTest('none')
+		drawTextAtDeviceLookingAtUser(pass, 'hand/left', 'grip', 0.01)
+		drawTextAtDeviceLookingAtUser(pass, 'hand/left/point', 'aim', 0.01)
+		drawTextAtDeviceLookingAtUser(pass, 'hand/right', 'grip', 0.01)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/right/point', 'aim', 0.01)
+		pass:setDepthTest('gequal')
 	else
 		pass:setColor(1, 1, 1)
 		drawLineForwardAtDevice(pass, 'hand/left/point', 1.0)
