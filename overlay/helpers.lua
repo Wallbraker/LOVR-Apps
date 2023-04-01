@@ -75,6 +75,18 @@ function drawModelAtDeviceY180(pass, model, device)
 end
 
 ----
+-- Helper to draw a line at a device pose.
+function drawLineAtDevice(pass, device, line)
+	if not lovr.headset.isTracked(device) then return end
+
+	local rot = lovr.math.quat(lovr.headset.getOrientation(device))
+	local p1 = lovr.math.vec3(lovr.headset.getPosition(device))
+	local p2 = rot * line + p1
+
+	pass:line(p1, p2)
+end
+
+----
 -- Helper to draw a line along the negative Z-axis of a device pose.
 function drawLineForwardAtDevice(pass, device, length)
 	if not lovr.headset.isTracked(device) then return end
