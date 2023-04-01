@@ -89,13 +89,7 @@ end
 ----
 -- Helper to draw a line along the negative Z-axis of a device pose.
 function drawLineForwardAtDevice(pass, device, length)
-	if not lovr.headset.isTracked(device) then return end
-	local x, y, z = lovr.headset.getPosition(device)
-	local a, ax, ay, az = lovr.headset.getOrientation(device)
-	local rot = lovr.math.newQuat(a, ax, ay, az)
-	local rx, ry, rz = rot:direction():mul(length):unpack()
-
-	pass:line(x, y, z, rx + x, ry + y, rz + z)
+	drawLineAtDevice(pass, device, lovr.math.vec3(0, 0, -length))
 end
 
 ----
