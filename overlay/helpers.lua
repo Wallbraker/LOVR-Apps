@@ -48,6 +48,33 @@ function drawModelAtDevice(pass, model, device)
 end
 
 ----
+-- Draws a model with a offset, pos_offset is rotated with the device rotation.
+function drawModelAtDeviceWithOffset(pass, model, device, pos_offset, rot_offset)
+	if not lovr.headset.isTracked(device) then return end
+	local x, y, z = lovr.headset.getPosition(device)
+	local a, ax, ay, az = lovr.headset.getOrientation(device)
+
+	-- Get orientation.
+	local rot = lovr.math.quat(a, ax, ay, az)
+	local pos = lovr.math.vec3(x, y, z) + rot * pos_offset
+	rot = rot * rot_offset
+
+	-- Do the drawing.
+	pass:draw(model, pos, 1, rot)
+end
+
+----
+-- Draws a model, that is rotated around y axis 180 dagrees.
+function drawModelAtDeviceY180(pass, model, device)
+	-- Needs to turn around the headset 180.
+	local y180 = lovr.math.quat(0, 1, 0, 0, true)
+	local ident = lovr.math.vec3(0, 0, 0)
+
+	-- Pass on.
+	drawModelAtDeviceWithOffset(pass, model, device, ident, y180)
+end
+
+----
 -- Helper to draw a line along Z-axis of a device pose.
 function drawLineZ(pass, device, length)
 	if not lovr.headset.isTracked(device) then return end
