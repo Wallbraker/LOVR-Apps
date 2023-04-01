@@ -3,6 +3,15 @@
 
 local math = require 'math'
 
+local quat = lovr.math.quat
+local vec3 = lovr.math.vec3
+local mat4 = lovr.math.mat4
+
+local isTracked = lovr.headset.isTracked
+local getPosition = lovr.headset.getPosition
+local getOrientation = lovr.headset.getOrientation
+local getPositionVec3 = function(device) return vec3(getPosition(device)) end
+local getOrientationQuat = function(device) return quat(getOrientation(device)) end
 
 
 ----
@@ -40,23 +49,24 @@ end
 ----
 -- Helper function to draw a model at a device location.
 function drawModelAtDevice(pass, model, device)
-	if not lovr.headset.isTracked(device) then return end
-	local x, y, z = lovr.headset.getPosition(device)
-	local a, ax, ay, az = lovr.headset.getOrientation(device)
+	if not isTracked(device) then return end
 
-	pass:draw(model, x, y, z, 1, a, ax, ay, az)
+	local pos = getPositionVec3(device)
+	local rot = getOrientationQuat(device)
+
+	pass:draw(model, pos, 1, rot)
 end
 
 ----
 -- Draws a model with a offset, pos_offset is rotated with the device rotation.
 function drawModelAtDeviceWithOffset(pass, model, device, pos_offset, rot_offset)
-	if not lovr.headset.isTracked(device) then return end
-	local x, y, z = lovr.headset.getPosition(device)
-	local a, ax, ay, az = lovr.headset.getOrientation(device)
+	if not isTracked(device) then return end
 
-	-- Get orientation.
-	local rot = lovr.math.quat(a, ax, ay, az)
-	local pos = lovr.math.vec3(x, y, z) + rot * pos_offset
+	local pos = getPositionVec3(device)
+	local rot = getOrientationQuat(device)
+
+	-- Get new orientation.
+	pos = pos + rot * pos_offset
 	rot = rot * rot_offset
 
 	-- Do the drawing.
@@ -67,8 +77,8 @@ end
 -- Draws a model, that is rotated around y axis 180 dagrees.
 function drawModelAtDeviceY180(pass, model, device)
 	-- Needs to turn around the headset 180.
-	local y180 = lovr.math.quat(0, 1, 0, 0, true)
-	local ident = lovr.math.vec3(0, 0, 0)
+	local y180 = quat(0, 1, 0, 0, true)
+	local ident = vec3(0, 0, 0)
 
 	-- Pass on.
 	drawModelAtDeviceWithOffset(pass, model, device, ident, y180)
@@ -77,10 +87,10 @@ end
 ----
 -- Helper to draw a line at a device pose.
 function drawLineAtDevice(pass, device, line)
-	if not lovr.headset.isTracked(device) then return end
+	if not isTracked(device) then return end
 
-	local rot = lovr.math.quat(lovr.headset.getOrientation(device))
-	local p1 = lovr.math.vec3(lovr.headset.getPosition(device))
+	local rot = getOrientationQuat(device)
+	local p1 = getPositionVec3(device)
 	local p2 = rot * line + p1
 
 	pass:line(p1, p2)
@@ -89,21 +99,16 @@ end
 ----
 -- Helper to draw a line along the negative Z-axis of a device pose.
 function drawLineForwardAtDevice(pass, device, length)
-	drawLineAtDevice(pass, device, lovr.math.vec3(0, 0, -length))
+	drawLineAtDevice(pass, device, vec3(0, 0, -length))
 end
 
 ----
 -- Helper to draw a axis cross at a device pose.
 function drawAxisAtDevice(pass, device, stop, start)
-	if not lovr.headset.isTracked(device) then return end
+	if not isTracked(device) then return end
 
-	local vec3 = lovr.math.vec3
-
-	local x, y, z = lovr.headset.getPosition(device)
-	local a, ax, ay, az = lovr.headset.getOrientation(device)
-	local rot = lovr.math.newQuat(a, ax, ay, az)
-
-	local center = vec3(x, y, z)
+	local center = getPositionVec3(device)
+	local rot = getOrientationQuat(device)
 
 	start = start or 0.0
 
@@ -144,16 +149,15 @@ end
 -- Draws text at the location of the given device
 -- but rotated so it is always facing the user.
 function drawTextAtDeviceLookingAtUser(pass, device, text, scale)
-	if not lovr.headset.isTracked(device) then return end
+	if not isTracked(device) then return end
 
 	scale = scale or 0.1
 	text = text or device
 
-	local vec3 = lovr.math.vec3
-	local user = vec3(lovr.headset.getPosition())
-	local pos = vec3(lovr.headset.getPosition(device))
+	local user = getPositionVec3()
+	local pos = getPositionVec3(device)
 
-	local view = lovr.math.newMat4():target(pos, user, vec3(0, 1, 0))
+	local view = mat4():target(pos, user, vec3(0, 1, 0))
 	view = view:scale(vec3(-scale, scale, scale))
 
 	pass:setColor(1, 1, 1)
