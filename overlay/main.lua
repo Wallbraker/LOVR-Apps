@@ -72,8 +72,8 @@ function renderScene(pass, isMirror)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/right/point', 'aim', 0.01)
 	else
 		pass:setColor(1, 1, 1)
-		drawLineZ(pass, 'hand/left/point', 1.0)
-		drawLineZ(pass, 'hand/right/point', 1.0)
+		drawLineForwardAtDevice(pass, 'hand/left/point', 1.0)
+		drawLineForwardAtDevice(pass, 'hand/right/point', 1.0)
 	end
 
 	if draw_controllers and always_draw_controllers then
