@@ -61,14 +61,14 @@ function renderScene(pass, isMirror)
 	local draw_axis = true
 
 	if draw_axis then
-		drawAxis(pass, 'hand/left', 0.1, 0.01)
+		drawAxisAtDevice(pass, 'hand/left', 0.1, 0.01)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/left', 'grip', 0.01)
-		drawAxis(pass, 'hand/left/point', 0.1, 0.01)
+		drawAxisAtDevice(pass, 'hand/left/point', 0.1, 0.01)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/left/point', 'aim', 0.01)
 
-		drawAxis(pass, 'hand/right', 0.1, 0.01)
+		drawAxisAtDevice(pass, 'hand/right', 0.1, 0.01)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/right', 'grip', 0.01)
-		drawAxis(pass, 'hand/right/point', 0.1, 0.01)
+		drawAxisAtDevice(pass, 'hand/right/point', 0.1, 0.01)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/right/point', 'aim', 0.01)
 	else
 		pass:setColor(1, 1, 1)

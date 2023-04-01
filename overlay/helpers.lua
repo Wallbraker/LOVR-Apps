@@ -88,7 +88,7 @@ end
 
 ----
 -- Helper to draw a axis cross at a device pose.
-function drawAxis(pass, device, stop, start)
+function drawAxisAtDevice(pass, device, stop, start)
 	if not lovr.headset.isTracked(device) then return end
 
 	local vec3 = lovr.math.vec3
