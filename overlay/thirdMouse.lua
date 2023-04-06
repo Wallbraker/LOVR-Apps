@@ -27,7 +27,12 @@ local setThirdPartyView = function()
 	local rot = y:mul(x)
 
 	local x, y, z = rot:direction():mul(-stateDistance):unpack()
-	view = lovr.math.newMat4():lookAt(vec3(x, y, z), vec3(0, 0, 0), vec3(0, 1, 0))
+
+	local from = vec3(x, y, z)
+	local at = vec3(0, 1.2, 0)
+	local up = vec3(0, 1, 0)
+
+	view = lovr.math.newMat4():lookAt(from, at, up)
 	camera = lovr.math.newMat4(view):invert()
 end
 
