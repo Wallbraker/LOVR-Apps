@@ -23,6 +23,17 @@ end
 
 --
 --
+-- Settings
+--
+--
+
+local lDrawAxis = true -- Should we draw axis crosses at controller poses?
+local lDrawControllers = false -- Should controllers be drawn at all?
+local lDrawControllersAlways = false -- Should controllers always be drawn?
+
+
+--
+--
 -- Helper functions.
 --
 --
@@ -56,11 +67,7 @@ function renderScene(pass, isMirror)
 		end
 	end
 
-	local draw_controllers = false
-	local always_draw_controllers = true
-	local draw_axis = true
-
-	if draw_axis then
+	if lDrawAxis then
 		drawAxisAtDevice(pass, 'hand/left', 0.1, 0.01)
 		drawTextAtDeviceLookingAtUser(pass, 'hand/left', 'grip', 0.01)
 		drawAxisAtDevice(pass, 'hand/left/point', 0.1, 0.01)
@@ -76,17 +83,17 @@ function renderScene(pass, isMirror)
 		drawLineForwardAtDevice(pass, 'hand/right/point', 1.0)
 	end
 
-	if draw_controllers and always_draw_controllers then
+	if lDrawControllers and lDrawControllersAlways then
 		pass:setColor(1, 1, 1)
 		drawModelAtDevice(pass, model_left, 'hand/left')
 		drawModelAtDevice(pass, model_right, 'hand/right')
 	end
 
-	if not has_hands[1] and not always_draw_controllers and draw_controllers then
+	if not has_hands[1] and not lDrawControllersAlways and lDrawControllers then
 		pass:setColor(1, 1, 1)
 		drawModelAtDevice(pass, model_left, 'hand/left')
 	end
-	if not has_hands[2] and not always_draw_controllers and draw_controllers then
+	if not has_hands[2] and not lDrawControllersAlways and lDrawControllers then
 		pass:setColor(1, 1, 1)
 		drawModelAtDevice(pass, model_right, 'hand/right')
 	end
