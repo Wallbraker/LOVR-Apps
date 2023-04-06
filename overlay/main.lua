@@ -30,6 +30,9 @@ end
 local lDrawAxis = true -- Should we draw axis crosses at controller poses?
 local lDrawControllers = false -- Should controllers be drawn at all?
 local lDrawControllersAlways = false -- Should controllers always be drawn?
+local lDrawMirrorHeadCube = true -- Should we draw a head cube in mirror view?
+local lDrawCameraCube = true -- Should we draw where the mirror camera is?
+local lMirrorLookAtRightGrip = false -- Should mirror view always look at the right grip?
 
 
 --
@@ -47,11 +50,13 @@ function renderScene(pass, isMirror)
 	pass:plane(0, 0, 0, 4, 4, math.pi / 2, 1, 0, 0)
 
 	-- If it's the mirror view, draw the head
-	if isMirror then
+	if lDrawMirrorHeadCube and isMirror then
 		pass:setColor(1, 1, 1)
 		local x, y, z, angle, ax, ay, az = lovr.headset.getPose()
 		pass:cube(x, y, z, .2, angle, ax, ay, az)
-	else
+	end
+
+	if lDrawCameraCube and not isMirror then
 		pass:setColor(1, 1, 1)
 		pass:cube(third.getCameraObjectMat():scale(0.2))
 	end
@@ -180,6 +185,17 @@ end
 function lovr.mirror(pass)
 	drawClear(pass, 0.5, 0.5, 0.9, 1.0)
 	pass:origin()
-	pass:transform(third.getCameraViewMat())
+
+	if lMirrorLookAtRightGrip then
+		local at = vec3(lovr.headset.getPosition('hand/right'))
+		local from = vec3(lovr.headset.getPosition())
+		local up = vec3(0, 1, 0)
+
+		local view = lovr.math.newMat4():lookAt(from, at, up)
+		pass:transform(view)
+	else
+		pass:transform(third.getCameraViewMat())
+	end
+
 	renderScene(pass, true)
 end
