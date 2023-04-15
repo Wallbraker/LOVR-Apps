@@ -47,6 +47,44 @@ function createTone()
 end
 
 ----
+-- Helper to draw a axis cross at location and rotation.
+function drawAxis(pass, center, rot, stop, start)
+	start = start or 0.0
+
+	local x = rot:mul(vec3(1, 0, 0))
+	local x_start = x * start
+	local x_stop = x * stop
+
+	local y = rot:mul(vec3(0, 1, 0))
+	local y_start = y * start
+	local y_stop = y * stop
+
+	local z = rot:mul(vec3(0, 0, 1))
+	local z_start = z * start
+	local z_stop = z * stop
+
+	local n1 = 0.0 -- Negative non-current axis
+	local n2 = 0.5 -- Negative current axis
+	local p1 = 0.2 -- Positive non-current axis
+	local p2 = 1.0 -- Positive current axis
+
+	pass:setColor(p2, p1, p1)
+	pass:line(center + x_start, center + x_stop)
+	pass:setColor(n2, n1, n1)
+	pass:line(center - x_start, center - x_stop)
+
+	pass:setColor(p1, p2, p1)
+	pass:line(center + y_start, center + y_stop)
+	pass:setColor(n1, n2, n1)
+	pass:line(center - y_start, center - y_stop)
+
+	pass:setColor(p1, p1, p2)
+	pass:line(center + z_start, center + z_stop)
+	pass:setColor(n1, n1, n2)
+	pass:line(center - z_start, center - z_stop)
+end
+
+----
 -- Helper function to draw a model at a device location.
 function drawModelAtDevice(pass, model, device)
 	if not isTracked(device) then return end
@@ -110,39 +148,7 @@ function drawAxisAtDevice(pass, device, stop, start)
 	local center = getPositionVec3(device)
 	local rot = getOrientationQuat(device)
 
-	start = start or 0.0
-
-	local x = rot:mul(vec3(1, 0, 0))
-	local x_start = x * start
-	local x_stop = x * stop
-
-	local y = rot:mul(vec3(0, 1, 0))
-	local y_start = y * start
-	local y_stop = y * stop
-
-	local z = rot:mul(vec3(0, 0, 1))
-	local z_start = z * start
-	local z_stop = z * stop
-
-	local n1 = 0.0 -- Negative non-current axis
-	local n2 = 0.5 -- Negative current axis
-	local p1 = 0.2 -- Positive non-current axis
-	local p2 = 1.0 -- Positive current axis
-
-	pass:setColor(p2, p1, p1)
-	pass:line(center + x_start, center + x_stop)
-	pass:setColor(n2, n1, n1)
-	pass:line(center - x_start, center - x_stop)
-
-	pass:setColor(p1, p2, p1)
-	pass:line(center + y_start, center + y_stop)
-	pass:setColor(n1, n2, n1)
-	pass:line(center - y_start, center - y_stop)
-
-	pass:setColor(p1, p1, p2)
-	pass:line(center + z_start, center + z_stop)
-	pass:setColor(n1, n1, n2)
-	pass:line(center - z_start, center - z_stop)
+	drawAxis(pass, center, rot, stop, start)
 end
 
 ----
