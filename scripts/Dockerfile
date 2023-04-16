@@ -12,7 +12,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get -y update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install apt-utils && \
     DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y install wget git cmake ninja-build && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install wget zip git git-lfs cmake ninja-build && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install llvm-12 clang-12 lld-12 && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install libsdl2-dev libvulkan-dev libxcb-glx0-dev && \
     echo "Done"
@@ -57,6 +57,35 @@ RUN cp \
     ls -lah build/bin && \
     appimagetool-x86_64.AppImage --appimage-extract-and-run build/bin && \
     echo Done
+
+RUN mv build/bin/lovr lovr-bin
+
+RUN \
+    rm build/bin/lovr.desktop && \
+    (cd lovr-apps/overlay && zip -r ../../content.zip . && cd ../..) && \
+    cat lovr-bin content.zip > build/bin/lovr && \
+    chmod a+x build/bin/lovr && \
+    cp lovr-apps/scripts/overlay.desktop build/bin/lovr.desktop && \
+    appimagetool-x86_64.AppImage --appimage-extract-and-run build/bin && \
+    rm content.zip && \
+    echo Done
+
+RUN \
+    rm build/bin/lovr.desktop && \
+    (cd lovr-apps/hand-vis && zip -r ../../content.zip . && cd ../..) && \
+    cat lovr-bin content.zip > build/bin/lovr && \
+    chmod a+x build/bin/lovr && \
+    cp lovr-apps/scripts/hand-vis.desktop build/bin/lovr.desktop && \
+    appimagetool-x86_64.AppImage --appimage-extract-and-run build/bin && \
+    rm content.zip && \
+    echo Done
+
+RUN \
+    echo -n "lovr: " && \
+    GIT_DIR=$HOME/apps/lovr/.git git describe --tags --always && \
+    echo -n "lovr-apps: " && \
+    GIT_DIR=$HOME/apps/lovr-apps/.git git describe --tags --always && \
+    ls -lah
 
 WORKDIR $HOME
 
