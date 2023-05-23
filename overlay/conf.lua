@@ -4,18 +4,60 @@
 
 ----
 -- Local options
-local try_to_use_window = true
+local lTryToUseWindow = true
+local lOverlay = true
+
 
 ----
 -- Global values carried forward to main.lua
 g_window_created = false
 
+
+----
+-- Parse a single argument, returns false when it's unknown.
+local parseArg = function(arg)
+
+	if arg == '--no-window' then
+		lTryToUseWindow = false
+	elseif arg == '--no-overlay' then
+		lOverlay = false
+	else
+		print("Unknown argument '" .. arg .. "'")
+		return false
+	end
+
+	return true
+end
+
+
+----
+-- Parse arguments
+local parseArgs = function(args)
+	local has_unknown
+	for k, v in pairs(arg) do
+		local ik = tonumber(k)
+		if ik and ik > 0 then
+			if not parseArg(v) then has_unknown = true end
+		end
+	end
+
+	if has_unknown then
+		print("Accpeted argumetns:")
+		print("\t--no-window    No mirror window")
+		print("\t--no-overlay   Don't enter overlay mode")
+	end
+end
+
+----
+-- Callback on start.
 function lovr.conf(t)
+	parseArgs(arg)
+
 	t.headset.drivers = {'openxr'}
-	t.headset.overlay = true -- Controls if this is an overlay application
+	t.headset.overlay = lOverlay -- Controls if this is an overlay application
 
 
-	if not try_to_use_window or t.window == nil then
+	if not lTryToUseWindow or t.window == nil then
 		t.window = nil
 		g_window_created = false
 	else
