@@ -32,6 +32,7 @@ local lDrawControllers = false -- Should controllers be drawn at all?
 local lDrawControllersAlways = false -- Should controllers always be drawn?
 local lDrawMirrorHeadCube = true -- Should we draw a head cube in mirror view?
 local lDrawCameraCube = true -- Should we draw where the mirror camera is?
+local lDrawPlane = false -- Should we draw the ground plane?
 local lMirrorLookAtRightGrip = false -- Should mirror view always look at the right grip?
 
 
@@ -46,8 +47,11 @@ local lMirrorLookAtRightGrip = false -- Should mirror view always look at the ri
 function renderScene(pass, isMirror)
 	local t = lovr.timer.getTime()
 
-	pass:setColor(.15, .15, .15)
-	pass:plane(0, 0, 0, 4, 4, math.pi / 2, 1, 0, 0)
+	-- Draw the plane.
+	if lDrawPlane then
+		pass:setColor(.15, .15, .15)
+		pass:plane(0, 0, 0, 4, 4, math.pi / 2, 1, 0, 0)
+	end
 
 	-- If it's the mirror view, draw the head
 	if lDrawMirrorHeadCube and isMirror then
