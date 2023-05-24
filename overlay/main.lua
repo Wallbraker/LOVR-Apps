@@ -108,6 +108,61 @@ function renderScene(pass, isMirror)
 		pass:setColor(1, 1, 1)
 		drawModelAtDevice(pass, model_right, 'hand/right')
 	end
+
+	-- Draw the pointing ray.
+	-- drawLineZ(pass, 'hand/left/point', 1.0)
+	-- drawLineZ(pass, 'hand/right/point', 1.0)
+
+	-- Distance from LOCAL
+	local local_y = 1.6 -- Compensate for being in stage.
+	local sphere_dist = 0.3 -- meters (10cm)
+	local sphere_split = 0.3 -- meters (30cm * 2)
+	local sphere_height = local_y - 0.4
+	local window_dist = 0.9 -- meters (50cm)
+
+	local rot = lovr.math.quat()
+	local pos1 = lovr.math.vec3(-sphere_split, sphere_height, -sphere_dist)
+	local pos2 = lovr.math.vec3( sphere_split, sphere_height, -sphere_dist)
+
+
+	pass:setCullMode('back')
+
+	pass:setColor(1, 1, 1, 1.0)
+	pass:sphere(pos1, 0.08, rot)
+	pass:setColor(1, 0, 0, 0.5)
+	pass:sphere(pos1, 0.1, rot)
+
+	pass:setColor(1, 1, 1, 1.0)
+	pass:sphere(pos2, 0.08, rot)
+	pass:setColor(0, 0, 1, 0.5)
+	pass:sphere(pos2, 0.1, rot)
+
+	pass:setCullMode('none')
+
+	--local m1 = lovr.math.newMat4(pos1, lovr.math.vec3(0.05), rot)
+	--local m2 = lovr.math.newMat4(pos2, lovr.math.vec3(0.05), rot)
+
+
+	-- Draw the text.
+	if true then
+		-- Draw the main info text.
+		local scale = 0.1 -- Units in meter
+		local x, y, z = 0, local_y, -window_dist
+		pass:setColor(1, 1, 1)
+		pass:text("This is a totally a cool Window\nMonado & xrdesktop is Awesome", x, y, z, scale)
+
+		-- Draw the quit and sound info text.
+		scale = 0.05 -- Units in meter
+		y = y - 0.2
+		pass:text("Hit red to hide window\nHit blue to switch window\nPinch to click", x, y, z, scale)
+
+		local rot = lovr.math.quat()
+		local pos = lovr.math.vec3(x, y + 0.2, z - 0.01)
+		local size = lovr.math.vec2(1.4, 1.0)
+
+		pass:setColor(0.1, 0.1, 0.1)
+		pass:plane(pos, size, rot)
+	end
 end
 
 
